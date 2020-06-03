@@ -8,6 +8,12 @@ const transaction = require("./routers/transaction");
 const app = express();
 
 dotenv.config({ path: "./config/config.env" });
+if (process.env.NODE_ENV === "production") {
+  app.use("/", express.static(path.join(__dirname, "client/build")));
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
+  );
+}
 require("./db/db");
 app.use(express.json());
 
@@ -23,13 +29,6 @@ app.use(function (req, res, next) {
 });
 
 app.use(transaction);
-
-if (process.env.NODE_ENV === "production") {
-  app.use("/", express.static(path.join(__dirname, "client/build")));
-  app.get("*", (req, res) =>
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
-  );
-}
 
 port = process.env.PORT || 5000;
 
